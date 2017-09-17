@@ -9,15 +9,26 @@ def getAQI(url):
 	try:
 		bsObj = BeautifulSoup(html, "html.parser")
 		tableCellList = bsObj.find_all('td', class_="AQDataLg")
+		pageTables = bsObj.find_all("table", class_="AQData")
+		tableRows = pageTables[3].find_all('tr')
+		time = tableRows[2].td.small.text
+		print("Time: ", time)
+		aqi = tableRows[5].td.string
+		aqi = "".join(aqi.split())
+		print("Air Quality Index: ", aqi)
 	except AttributeError as e:
 		return None
-	return tableCellList[0].text
+	
+	return tableCellList
 
+print()
 zipcode = input("input zipcode: ")
+print()
 url = "https://airnow.gov/index.cfm?action=airnow.local_city&zipcode={}&submit=Go".format(zipcode)
-print(url)
-airQuality = getAQI(url)
-if airQuality == None:
+htmlTags = getAQI(url)
+if htmlTags == None:
 	print("Problem retrieving AQI")
 else :
-	print("Your air today is: ", airQuality)
+	healthyLevel = htmlTags[0].text
+	print("Your air today is: ", healthyLevel)
+	print()
